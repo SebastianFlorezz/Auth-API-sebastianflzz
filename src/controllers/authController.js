@@ -18,7 +18,12 @@ const register = async (req, res) => {
         // if email exist
         if (emailExists){
             return res.status(400).json({
-                error: "User already exist"
+                errors: [{
+                        status: 400,
+                        source: { pointer: " " },  // TASK: ADD POINTER
+                        title: "Bad request",
+                        detail: "Invalid email or password"
+                    }]
             })
         }
 
@@ -30,13 +35,24 @@ const register = async (req, res) => {
         const newUser = await User.create({email, password: hashedPassword});
 
         res.status(201).json({
-            message: "User created succesfully", // TASK: fill the json with more attributes
-            data: newUser
+            data: [{
+                type: "users",
+                id: user._id,
+                attributes: {
+                    email: newUser.email,
+                    createdAt: newUser.createdAt
+                }
+            }]
         })
     } catch(err) {
         console.log(err)
         res.status(500).json({
-            error: "Register error" // TASK: fill the json with more attributes
+            errors: [{
+                status: 500,
+                title: "Internal Server Error",
+                source: { pointer: "/server" },
+                detail: "An unexpected error occurred on the server."
+            }]
         })
     }
 }
