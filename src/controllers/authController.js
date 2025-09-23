@@ -7,6 +7,7 @@ const User = require("../models/User.js");
 const register = async (req, res) => {
 
     try{
+        console.log("Body: " + req.body)
         const {email, password} = req.body;
 
         //we verify if the email exists
@@ -27,6 +28,7 @@ const register = async (req, res) => {
             message: "User created succesfully" // TASK: fill the json with more attributes
         })
     } catch(err) {
+        console.log(err)
         res.status(500).json({
             error: "Register error"
         })
