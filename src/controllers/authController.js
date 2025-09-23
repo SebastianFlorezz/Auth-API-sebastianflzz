@@ -7,7 +7,6 @@ const User = require("../models/User.js");
 const register = async (req, res) => {
 
     try{
-        console.log("Body: " + req.body)
         const {email, password} = req.body;
 
         //we verify if the email exists
