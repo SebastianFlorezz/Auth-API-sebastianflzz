@@ -20,9 +20,9 @@ const register = async (req, res) => {
             return res.status(400).json({
                 errors: [{
                         status: 400,
-                        source: { pointer: " " },  // TASK: ADD POINTER
+                        source: { pointer: "/data/attributes/email" },  
                         title: "Bad request",
-                        detail: "Invalid email or password"
+                        detail: "Email already registered"
                     }]
             })
         }
@@ -37,7 +37,7 @@ const register = async (req, res) => {
         res.status(201).json({
             data: [{
                 type: "users",
-                id: user._id,
+                id: newUser._id,
                 attributes: {
                     email: newUser.email,
                     createdAt: newUser.createdAt
