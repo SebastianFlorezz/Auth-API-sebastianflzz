@@ -9,5 +9,3 @@ app.listen(PORT, function(err){
     
     console.log("Server listening on Port: " + PORT)
 })
-
-console.log("hola")
