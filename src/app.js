@@ -7,6 +7,7 @@ const authRoutes = require("./routes/authRoutes.js")
 const PORT = process.env.PORT || 5000;
 
 app.use("/api", authRoutes)
+app.use(express.json())
 
 connectDB();
 
