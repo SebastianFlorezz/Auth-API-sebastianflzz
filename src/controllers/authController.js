@@ -17,9 +17,9 @@ const register = async (req, res) => {
 
         // if email exist
         if (emailExists){
-            return res.status(400).json({
+            return res.status(409).json({
                 errors: [{
-                        status: 400,
+                        status: 409,
                         source: { pointer: "/data/attributes/email" },  
                         title: "Bad request",
                         detail: "Email already registered"
@@ -35,15 +35,15 @@ const register = async (req, res) => {
         const newUser = await User.create({email, password: hashedPassword});
 
         res.status(201).json({
-            data: [{
+            data: {
                 type: "users",
                 id: newUser._id,
                 attributes: {
                     email: newUser.email,
                     createdAt: newUser.createdAt
                 }
-            }]
-        })
+            }
+        });
     } catch(err) {
         console.log(err)
         res.status(500).json({
@@ -70,14 +70,28 @@ const login = async (req, res) => {
 
         // if the user doesnt exists return 401 status
         if(!user){
-            return res.status(401).json({ error: "Invalid credentials"});
+            return res.status(401).json({
+                errors: [{
+                    status: 401,
+                    title: "Unauthorized",
+                    source: "/data/attributes/email",
+                    detail: "Invalid email or password"
+                }]
+            });
         };
 
         // we compare the password given by the user with the password on the database
         const passwordMatch = await bcrypt.compare(password, user.password);
 
         if (!passwordMatch){
-            return res.status(401).json({error: "Invalid credentials"}) // TASK: fill the json with more attributes
+            return res.status(401).json({
+                errors: [{
+                    status: 401,
+                    title: "Unauthorized",
+                    source: "/data/attributes/password",
+                    detail: "Invalid email or password"
+                }]
+            })
         }
 
         //we define the payload for jwt
@@ -87,13 +101,29 @@ const login = async (req, res) => {
         }
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "1h"})
-        res.status(200).json({token, user: {id: user._id, email: user.email}})
+        res.status(200).json({
+            data: {
+                type: "users",
+                id: user._id, 
+                attributes: {
+                    email: user.email,
+                    token: token
+                }
+            }
+        });
         
 
     } catch(err){
-        console.error("error", (err))
-    }
+        res.status(500).json({
+            errors: [{
+                status: 500,
+                title: "Internal Server Error",
+                source: { pointer: "/server" },
+                detail: "An unexpected error occurred on the server."
+            }]
+    });
 
+    }
 }
 
 module.exports = {register, login};
