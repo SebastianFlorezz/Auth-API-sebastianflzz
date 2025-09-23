@@ -1,5 +1,5 @@
 const User = require("../models/User.js");
-
+const bcrypt = require("bcrypt");
 
 
 
@@ -8,6 +8,7 @@ const register = async (req, res) => {
 
     try{
         const {email, password} = req.body;
+        const saltRounds = 10; // bcrpyt salt rounds
 
         //we verify if the email exists
         const emailExists = await User.findOne({email});
@@ -19,17 +20,21 @@ const register = async (req, res) => {
             })
         }
 
+        // we hash the password
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         
         // we save in the database
-        const newUser = await User.create({email, password});
+        const newUser = await User.create({email, password: hashedPassword});
 
         res.status(201).json({
-            message: "User created succesfully" // TASK: fill the json with more attributes
+            message: "User created succesfully", // TASK: fill the json with more attributes
+            data: newUser
         })
     } catch(err) {
         console.log(err)
         res.status(500).json({
-            error: "Register error"
+            error: "Register error" // TASK: fill the json with more attributes
         })
     }
 }
