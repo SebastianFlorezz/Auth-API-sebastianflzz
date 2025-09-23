@@ -11,9 +11,13 @@ router.post("/register", register);
 router.post("/login", login);
 
 // refresh token
-router.post("/refresh");
+router.post("/refresh", (req, res)=> {
+    res.send("Refresh token is not implemented yet")
+});
 
 // logout
-router.post("/logout");
+router.post("/logout", (req,res)=>{
+    res.send("Logout route not implemented yet")
+});
 
 module.exports = router;
