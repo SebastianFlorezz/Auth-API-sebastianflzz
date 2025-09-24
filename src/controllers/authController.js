@@ -11,7 +11,7 @@ const register = async (req, res) => {
         // bcrpyt salt rounds
         const saltRounds = 10; 
 
-        const passwordRegex = /^(?=.*[A-Z])(?=.*\d).+$/;  // TASK: put min 8 characters long
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         // if the password doesnt match with the regex
         if (!passwordRegex.test(password)) {
         return res.status(400).json({
@@ -119,6 +119,7 @@ const login = async (req, res) => {
             email: user.email,
         }
 
+        // we crete the token with the payload info and the jwt secret token
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" })
 
         res.status(200).json({
@@ -133,7 +134,7 @@ const login = async (req, res) => {
         });
     } catch (err) {
         console.log(err)
-
+        // if the error name is ValidationError send the model user DB error
         if (err.name === "ValidationError") {
             const errors = Object.keys(err.errors).map(key => ({
                 status: 400,
