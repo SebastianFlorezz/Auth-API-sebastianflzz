@@ -1,5 +1,3 @@
-
-
 ````markdown
 # Auth API
 
@@ -14,7 +12,7 @@ Implements user registration and login using **JWT** for session management.
    ```bash
    git clone https://github.com/SebastianFlorezz/Auth-API-sebastianflzz.git
    cd Auth-API-sebastianflzz
-````
+  ```
 
 2. **Install dependencies**
 
@@ -130,7 +128,7 @@ const userSchema = new mongoose.Schema({
     required: [true, "Password is required"],
     minLength: [8, "Password must be at least 8 characters long"],
     match: [
-       /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
+      /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
       "Password must contain at least one uppercase letter and one number"
     ]
   },
