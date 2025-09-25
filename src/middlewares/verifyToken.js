@@ -1,38 +1,55 @@
-const jwt = require("jsonwebtoken")
-const JWT_SECRET = process.env.JWT_SECRET
+const jwt = require("jsonwebtoken");
 
-function verifyToken(req,res,next){
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(" ")[1]
-    if(!token) {
-        return res.status(401).json({
-            error: "Authentication failed",
-            message: "No authorization token provided",
-            timestamp: new Date().toISOString()           
-        })
-    }
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers["authorization"];
 
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET)
-        req.user = decoded.user
-        next()
-    } catch(error){
-        let errorMessage = "Invalid token"
-
-        if (error instanceof jwt.TokenExpiredError){
-            errorMessage = "Token expired"
+  // we verify if the header exist
+  if (!authHeader) {
+    return res.status(401).json({
+      errors: [{
+        status: 401,
+        title: "Unauthorized",
+        detail: "Authorization header missing",
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: req.requestId
         }
+      }]
+    });
+  }
 
-        if(error instanceof jwt.JsonWebTokenError){
-            errorMessage = "Malformed token"
+  const token = authHeader.split(" ")[1]; // removing bearer
+  if (!token) {
+    return res.status(401).json({
+      errors: [{
+        status: 401,
+        title: "Unauthorized",
+        detail: "Token not provided",
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: req.requestId
         }
+      }]
+    });
+  }
 
-        res.status(401).json({
-            error: "Authentication failed",
-            message: errorMessage,
-            timestamp: new Date().toISOString()
-        })
-    }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      errors: [{
+        status: 401,
+        title: "Unauthorized",
+        detail: "Invalid or expired token",
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: req.requestId
+        }
+      }]
+    });
+  }
 }
 
-module.exports = verifyToken
+module.exports = authMiddleware;
