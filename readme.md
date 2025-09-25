@@ -1,10 +1,11 @@
-````markdown
+
 # Auth API
 
+````markdown
 Authentication API built with **Node.js**, **Express**, and **MongoDB**.  
 Implements user registration and login using **JWT** for session management.
 
----
+
 ````
 ## Quick Start
 
