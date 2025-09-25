@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     required: [true, "El nombre de usuario es obligatorio"],
     lowercase: true,
     trim: true,
+    unique: true,
     validate: [
         {
         validator: v => /^.{8,20}$/.test(v),
