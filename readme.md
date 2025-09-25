@@ -61,11 +61,31 @@ Implements user registration and login using JWT for session management.
 
 ```json
 {
+  "username": "username",
   "email": "user@example.com",
   "password": "SecurePass123"
 }
 ```
 
+* **Successful Response** (`201 Created`):
+```json
+{
+    "data": {
+        "type": "users",
+        "id": "68d58ae1309b6ef5b8c57c3c",
+        "attributes": {
+            "username": "username",
+            "email": "user@example.com",
+            "createdAt": "2025-09-25T18:33:05.647Z"
+        },
+        "meta": {
+            "timestamp": "2025-09-25T18:33:05.653Z",
+            "requestId": "65321c8d-05af-4913-a48d-b8d92092abf9"
+        }
+    }
+}
+        
+```
 * **Responses**:
 
   * `201 Created`: user successfully created
@@ -92,12 +112,19 @@ Implements user registration and login using JWT for session management.
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR...",
-  "user": {
-    "id": "64f1b...",
-    "email": "user@example.com",
-    "createdAt": "2025-09-24T12:34:56Z"
-  }
+    "data": {
+        "type": "users",
+        "id": "68d58ae1309b6ef5b8c57c3c",
+        "attributes": {
+            "username": "username",
+            "email": "user@example.com",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZDU4YWUxMzA5YjZlZjViOGM1N2MzYyIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoidXNlcm5hbWUiLCJpYXQiOjE3NTg4MjUyNDcsImV4cCI6MTc1ODgyODg0N30.KBtowSloC0d_Yy0xBVl1Af0FeLQcX1ZXxERA_LiJTnQ"
+        },
+        "meta": {
+            "timestamp": "2025-09-25T18:34:07.825Z",
+            "requestId": "e7dc8cca-ba38-456b-844b-12725f7fc17e"
+        }
+    }
 }
 ```
 
