@@ -1,6 +1,36 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+    username: {
+    type: String,
+    required: [true, "El nombre de usuario es obligatorio"],
+    lowercase: true,
+    trim: true,
+    validate: [
+        {
+        validator: v => /^.{8,20}$/.test(v),
+        message: "El nombre de usuario debe tener entre 8 y 20 caracteres"
+        },
+        {
+        validator: v => /^[a-zA-Z0-9._]+$/.test(v),
+        message: "El nombre de usuario solo puede contener letras, números, '.' o '_'"
+        },
+        {
+        validator: v => !/^[_\.]/.test(v),
+        message: "El nombre de usuario no puede empezar con '.' o '_'"
+        },
+        {
+        validator: v => !/[_\.]$/.test(v),
+        message: "El nombre de usuario no puede terminar con '.' o '_'"
+        },
+        {
+        validator: v => !/(\.\.|__|_.|._)/.test(v),
+        message: "El nombre de usuario no puede contener secuencias como '__', '..', '._' o '_.'."
+        }
+    ]
+    },
+
+
     email: {
         type: String, 
         required: true, 
