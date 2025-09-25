@@ -8,10 +8,28 @@ require("dotenv").config()
 const register = async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                errors: [{
+                status: 400,
+                title: "Invalid Attribute",
+                source: { pointer: !email ? "/data/attributes/email" : "/data/attributes/password" },
+                detail: !email 
+                    ? "Email is required" 
+                    : "Password is required",
+                meta: {
+                    timestamp: new Date().toISOString(),
+                    requestId: req.requestId
+                }
+                }]
+            });
+        }
+
         // bcrpyt salt rounds
         const saltRounds = 10; 
 
-        const passwordRegex = /^(?=.*[A-Z])(?=.*\d).+$/;  // TASK: put min 8 characters long
+        const passwordRegex = /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
         // if the password doesnt match with the regex
         if (!passwordRegex.test(password)) {
         return res.status(400).json({
@@ -19,7 +37,11 @@ const register = async (req, res) => {
             status: 400,
             source: { pointer: "/data/attributes/password" },
             title: "Invalid Attribute",
-            detail: "Password must contain at least one uppercase letter and one number"
+            detail: "Password must contain at least one uppercase letter, one number and 8 characters minimun",
+            meta: {
+                timestamp: new Date().toISOString(),
+                requestId: req.requestId
+            }
             }]
         });
         }
@@ -29,7 +51,9 @@ const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         // we save in the database (validations de mongoose se disparan aquí)
-        const newUser = await User.create({ email, password: hashedPassword });
+        const newUser = await User.create({ 
+            email: email.toLowerCase(),
+             password: hashedPassword });
 
         res.status(201).json({
             data: {
@@ -38,6 +62,10 @@ const register = async (req, res) => {
                 attributes: {
                     email: newUser.email,
                     createdAt: newUser.createdAt
+                },
+                meta: {
+                    timestamp: new Date().toISOString(),
+                    requestId: req.requestId
                 }
             }
         });
@@ -51,7 +79,11 @@ const register = async (req, res) => {
                     status: 409,
                     source: { pointer: "/data/attributes/email" },
                     title: "Conflict",
-                    detail: "Email already registered"
+                    detail: "Email already registered",
+                    meta:{
+                        timestamp: new Date().toISOString(),
+                        requestId: req.requestId
+                    }
                 }]
             });
         }
@@ -62,7 +94,11 @@ const register = async (req, res) => {
                 status: 400,
                 source: { pointer: `/data/attributes/${key}` },
                 title: "Invalid Attribute",
-                detail: err.errors[key].message // send the error message in the User schema
+                detail: err.errors[key].message,// send the error message in the User schema
+                meta: {
+                    timestamp: new Date().toISOString(),
+                    requestId: req.requestId
+                }
             }));
             return res.status(400).json({ errors });
         }
@@ -72,7 +108,11 @@ const register = async (req, res) => {
                 status: 500,
                 title: "Internal Server Error",
                 source: { pointer: "/server" },
-                detail: "An unexpected error occurred on the server."
+                detail: "An unexpected error occurred on the server.",
+                meta: {
+                    timestamp: new Date().toISOString(),
+                    requestId: req.requestId
+                }
             }]
         })
     }
@@ -83,7 +123,25 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        
+
+        //input validations
+        if (!email || !password) {
+        return res.status(400).json({
+            errors: [{
+            status: 400,
+            title: "Invalid Attribute",
+            source: { pointer: !email ? "/data/attributes/email" : "/data/attributes/password" },
+            detail: !email 
+                ? "Email is required" 
+                : "Password is required",
+            meta: {
+                timestamp: new Date().toISOString(),
+                requestId: req.requestId
+            }
+            }]
+        });
+    }
+    
         //we verify if the email exists in the database
         const user = await User.findOne({ email });
 
@@ -94,7 +152,11 @@ const login = async (req, res) => {
                     status: 401,
                     title: "Unauthorized",
                     source: { pointer: "/data/attributes/email" },
-                    detail: "Invalid email or password"
+                    detail: "Invalid email or password",
+                    meta: {
+                        timestamp: new Date().toISOString(),
+                        requestId: req.requestId
+                    }
                 }]
             });
         }
@@ -108,7 +170,11 @@ const login = async (req, res) => {
                     status: 401,
                     title: "Unauthorized",
                     source: { pointer: "/data/attributes/password" },
-                    detail: "Invalid email or password"
+                    detail: "Invalid email or password",
+                    meta: {
+                        timestamp: new Date().toISOString(),
+                        requestId: req.requestId
+                    }
                 }]
             })
         }
@@ -128,6 +194,10 @@ const login = async (req, res) => {
                 attributes: {
                     email: user.email,
                     token: token
+                },
+                meta: {
+                    timestamp: new Date().toISOString(),
+                    requestId: req.requestId
                 }
             }
         });
@@ -139,7 +209,11 @@ const login = async (req, res) => {
                 status: 400,
                 source: { pointer: `/data/attributes/${key}` },
                 title: "Invalid Attribute",
-                detail: err.errors[key].message
+                detail: err.errors[key].message,
+                meta: {
+                    timestamp: new Date().toISOString(),
+                    requestId: req.requestId
+                }
             }));
             return res.status(400).json({ errors });
         }
@@ -149,7 +223,11 @@ const login = async (req, res) => {
                 status: 500,
                 title: "Internal Server Error",
                 source: { pointer: "/server" },
-                detail: "An unexpected error occurred on the server."
+                detail: "An unexpected error occurred on the server.",
+                meta: {
+                    timestamp: new Date().toISOString(),
+                    requestId: req.requestId
+                }
             }]
         });
     }
