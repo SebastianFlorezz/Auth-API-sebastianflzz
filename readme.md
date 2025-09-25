@@ -13,13 +13,12 @@ Implements user registration and login using JWT for session management.
    ```bash
    git clone https://github.com/SebastianFlorezz/Auth-API-sebastianflzz.git
    cd Auth-API-sebastianflzz
-  ``` 
+   ``` 
 
 2. **Install dependencies**
-
    ```bash
    npm install
-  ```
+   ```
 
 3. **Set up environment variables**
    Create a `.env` file in the project root:
