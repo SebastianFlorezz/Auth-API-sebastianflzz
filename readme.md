@@ -5,14 +5,14 @@ Authentication API built with **Node.js**, **Express**, and **MongoDB**.
 Implements user registration and login using **JWT** for session management.
 
 ---
-
+````
 ## Quick Start
 
 1. **Clone the repository**  
    ```bash
    git clone https://github.com/SebastianFlorezz/Auth-API-sebastianflzz.git
    cd Auth-API-sebastianflzz
-  ```
+  ``` 
 
 2. **Install dependencies**
 
