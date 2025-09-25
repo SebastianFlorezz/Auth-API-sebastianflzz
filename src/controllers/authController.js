@@ -7,17 +7,18 @@ require("dotenv").config()
 //register an User
 const register = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { username, email, password } = req.body;
 
-        if (!email || !password) {
+        //empty input validation
+        if (!username || !email || !password) {
+        const missing = !username ? "username" : !email ? "email" : "password";
+
             return res.status(400).json({
                 errors: [{
                 status: 400,
                 title: "Invalid Attribute",
-                source: { pointer: !email ? "/data/attributes/email" : "/data/attributes/password" },
-                detail: !email 
-                    ? "Email is required" 
-                    : "Password is required",
+                source: { pointer: `/data/attributes/${missing}` },
+                detail: `${missing.charAt(0).toUpperCase()}${missing.slice(1)} is required`,
                 meta: {
                     timestamp: new Date().toISOString(),
                     requestId: req.requestId
@@ -25,6 +26,7 @@ const register = async (req, res) => {
                 }]
             });
         }
+
 
         // bcrpyt salt rounds
         const saltRounds = 10; 
@@ -52,14 +54,16 @@ const register = async (req, res) => {
 
         // we save in the database (validations de mongoose se disparan aquí)
         const newUser = await User.create({ 
+            username,
             email: email.toLowerCase(),
-             password: hashedPassword });
+            password: hashedPassword });
 
         res.status(201).json({
             data: {
                 type: "users",
                 id: newUser._id,
                 attributes: {
+                    username,
                     email: newUser.email,
                     createdAt: newUser.createdAt
                 },
@@ -183,6 +187,7 @@ const login = async (req, res) => {
         const payload = {
             id: user._id,
             email: user.email,
+            username: user.username
         }
 
         // we crete the token with the payload info and the jwt secret token
@@ -193,6 +198,7 @@ const login = async (req, res) => {
                 type: "users",
                 id: user._id, 
                 attributes: {
+                    username: user.username,
                     email: user.email,
                     token: token
                 },
